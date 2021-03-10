@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.blog.dao.CommentMapper">
+
+<!--    //获取所有评论-->
+<!--    List<Comment> getComments();-->
+        <select id="getComments" resultMap="getCommentResultMap">
+            select * from t_comment
+        </select>
+
+        <select id="getCommentsNotReviewed" resultMap="getCommentResultMap">
+            select * from t_comment where state = 0
+        </select>
+
+<!--    //通过id获取评论-->
+<!--    Comment getCommentById(Integer id);-->
+        <select id="getCommentById" resultMap="getCommentResultMap">
+            select * from t_comment where id = #{id}
+        </select>
+<!--    //获取评论相同博客的评论-->
+<!--    List<Comment> getCommentsByBlogId(Integer blogId);-->
+        <select id="getCommentsByBlogId" resultMap="getCommentResultMap">
+            select * from t_comment where blog_id = #{blog.id} and state = 1
+        </select>
+
+
+    <!--自定义结果集映射规则-->
+    <resultMap id="getCommentResultMap" type="com.blog.pojo.Comment">
+        <id column="id" property="id"/>
+        <result column="user_ip" property="userIp"></result>
+        <result column="comment_date" property="commentDate"></result>
+        <result column="content" property="content"></result>
+        <result column="state" property="state"></result>
+        <association property="blog"
+                     select="com.blog.dao.BlogMapper.getBlogById"
+                     column="blog_id">
+        </association>
+    </resultMap>
+
+<!--    boolean addComment(Comment comment);-->
+    <insert id="addComment" >
+            insert into t_comment(user_ip,comment_date,content,state,blog_id)
+                values (#{userIp},#{commentDate},#{content},#{state},#{blog.id})
+        </insert>
+<!--    boolean deleteCommentById(Integer id);-->
+    <delete id="deleteCommentById">
+            delete from t_comment where id = #{id}
+        </delete>
+<!--  通过博客id删除评论  -->
+    <delete id="deleteCommentByBlogId">
+            delete from t_comment where blog_id = #{blogId}
+        </delete>
+<!--    boolean updateComment(Comment comment);-->
+    <update id="updateComment" parameterType="com.blog.pojo.Comment" >
+
+        update t_comment
+        <trim prefix="set" suffixOverrides=",">
+            <if test="userIp!=null">user_ip = #{userIp},</if>
+            <if test="commentDate!=null">comment_date = #{commentDate},</if>
+            <if test="content!=null">content = #{content},</if>
+            <if test="state!=null">state = #{state},</if>
+            <if test="blog!=null">blog_id = #{blog.id},</if>
+        </trim>
+        WHERE id=#{id}
+
+
+    </update>
+</mapper>
