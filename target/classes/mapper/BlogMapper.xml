@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.blog.dao.BlogMapper">
+
+<!--    //获取所有博客,不包含content-->
+<!--    List<Blog> getBlogs();-->
+        <select id="getBlogs" resultMap="getBlogResultMap">
+            select id,title,summary,release_date,click_hit,reply_hit,type_id,keyword from t_blog where id !=1 order by release_date desc
+        </select>
+<!--    Blog getBlogById(Integer id);-->
+        <select id="getBlogById" resultMap="getBlogResultMap">
+            select * from t_blog where id = #{id}
+        </select>
+
+<!--自定义结果集映射规则-->
+    <resultMap id="getBlogResultMap" type="com.blog.pojo.Blog">
+        <id column="id" property="id"/>
+        <result column="title" property="title"></result>
+        <result column="summary" property="summary"></result>
+        <result column="release_date" property="releaseDate"></result>
+        <result column="click_hit" property="clickHit"></result>
+        <result column="reply_hit" property="replyHit"></result>
+        <result column="content" property="content"></result>
+        <result column="keyword" property="keyword"></result>
+        <association property="blogType"
+                     select="com.blog.dao.BlogTypeMapper.getBlogTypeById"
+                     column="type_id">
+        </association>
+    </resultMap>
+
+
+
+<!--    boolean updateBlog(Blog blog);-->
+        <update id="updateBlog" parameterType="com.blog.pojo.Blog" >
+
+            update t_blog
+            <trim prefix="set" suffixOverrides=",">
+                <if test="title!=null">title = #{title},</if>
+                <if test="summary!=null">summary = #{summary},</if>
+                <if test="releaseDate!=null">release_date = #{releaseDate},</if>
+                <if test="clickHit!=null">click_hit = #{clickHit},</if>
+                <if test="replyHit!=null">reply_hit = #{replyHit},</if>
+                <if test="content!=null">content = #{content},</if>
+                <if test="blogType!=null">type_id = #{blogType.id},</if>
+                <if test="keyword!=null">keyword = #{keyword},</if>
+            </trim>
+            WHERE id=#{id}
+
+
+        </update>
+<!--    boolean deleteBlogById(Integer id);-->
+        <delete id="deleteBlogById">
+            delete from t_blog where id = #{id}
+        </delete>
+<!--    boolean addBlog(Blog blog);-->
+        <insert id="addBlog" >
+            insert into t_blog(title,summary,release_date,click_hit,reply_hit,content,type_id,keyword)
+                values (#{title},#{summary},#{releaseDate},#{clickHit},#{replyHit},#{content},#{blogType.id},#{keyword})
+        </insert>
+
+
+</mapper>

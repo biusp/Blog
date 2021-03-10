@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.blog.dao.BlogTypeMapper">
+
+    <!--    List<BlogType> getBlogTypes();-->
+    <select id="getBlogTypes" resultType="com.blog.pojo.BlogType">
+        select * from t_blogtype order by order_no
+    </select>
+    <!--    BlogType getBlogTypeById(Integer id);-->
+    <select id="getBlogTypeById" resultType="com.blog.pojo.BlogType">
+        select * from t_blogtype where id = #{id}
+    </select>
+    <!--    boolean addBlogType(BlogType blogType);-->
+    <insert id="addBlogType" parameterType="com.blog.pojo.BlogType">
+        insert into t_blogtype(id,type_name,order_no) values (#{id},#{typeName},#{orderNo})
+    </insert>
+    <!--    boolean deleteBlogTypeById(Integer id);-->
+    <delete id="deleteBlogTypeById">
+        delete from t_blogtype where id = #{id}
+    </delete>
+    <!--    boolean updateBlogType(BlogType blogType);-->
+    <update id="updateBlogType" parameterType="com.blog.pojo.BlogType">
+        update t_blogtype
+        <trim prefix="set" suffixOverrides=",">
+            <if test="typeName!=null">type_name = #{typeName},</if>
+            <if test="typeName!=null">type_name = #{typeName},</if>
+            <if test="orderNo!=null">order_no = #{orderNo},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+</mapper>
